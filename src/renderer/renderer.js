@@ -728,6 +728,11 @@ function bindEvents() {
   document.getElementById('typewriterBtn').addEventListener('click', () => {
     state.typewriterMode = !state.typewriterMode;
     document.body.classList.toggle('typewriter-mode', state.typewriterMode);
+    try {
+      getOwnmdApi().setTypewriterMode(state.typewriterMode);
+    } catch (err) {
+      console.error('Failed to persist typewriter mode:', err);
+    }
   });
 
   // View mode buttons
@@ -791,9 +796,9 @@ function init() {
   loadRecentFolders();
   updateExportButtons();
 
-  // Keyboard shortcut for focus mode (Cmd+Shift+F)
+  // Keyboard shortcut for focus mode (Cmd+Shift+F or Ctrl+Shift+F)
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'F' && e.metaKey && e.shiftKey) {
+    if (e.key === 'F' && (e.metaKey || e.ctrlKey) && e.shiftKey) {
       e.preventDefault();
       setFocusMode(!state.focusMode);
     }
@@ -801,12 +806,23 @@ function init() {
 
   // Load persisted focus mode preference
   try {
-    const result = getOwnmdApi().getFocusMode();
-    if (result && result.focusMode) {
+    const focusResult = getOwnmdApi().getFocusMode();
+    if (focusResult && focusResult.focusMode) {
       setFocusMode(true);
     }
   } catch (err) {
     console.error('Failed to load focus mode preference:', err);
+  }
+
+  // Load persisted typewriter mode preference
+  try {
+    const typewriterResult = getOwnmdApi().getTypewriterMode();
+    if (typewriterResult && typewriterResult.typewriterMode) {
+      state.typewriterMode = true;
+      document.body.classList.add('typewriter-mode');
+    }
+  } catch (err) {
+    console.error('Failed to load typewriter mode preference:', err);
   }
 }
 

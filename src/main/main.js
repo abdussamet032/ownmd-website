@@ -10,7 +10,8 @@ const store = new Store({
     theme: 'light',
     bookmarks: [],
     recentFolders: [],
-    focusMode: false
+    focusMode: false,
+    typewriterMode: false
   }
 });
 
@@ -110,6 +111,15 @@ ipcMain.handle('get-focus-mode', () => {
 ipcMain.handle('set-focus-mode', (event, enabled) => {
   store.set('focusMode', enabled);
   return { focusMode: enabled };
+});
+
+ipcMain.handle('get-typewriter-mode', () => {
+  return { typewriterMode: store.get('typewriterMode') };
+});
+
+ipcMain.handle('set-typewriter-mode', (event, enabled) => {
+  store.set('typewriterMode', enabled);
+  return { typewriterMode: enabled };
 });
 
 ipcMain.handle('search-files', async (event, query) => {
