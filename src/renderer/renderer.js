@@ -17,6 +17,7 @@ let outlinePanel = null;
 let outlineList = null;
 let recentFoldersBtn = null;
 let recentDropdown = null;
+let recentFoldersContainer = null;
 let currentFilePath = null;
 
 function getOwnmdApi() {
@@ -310,13 +311,13 @@ async function performSearch(query) {
       return;
     }
 
-    renderSearchResults(result.results || []);
+    renderSearchResults(result.results || [], query);
   } catch (err) {
     showError(`Search error: ${err.message}`);
   }
 }
 
-function renderSearchResults(results) {
+function renderSearchResults(results, query) {
   searchResults.innerHTML = '';
 
   if (results.length === 0) {
@@ -456,6 +457,8 @@ async function openRecentFolder(folderPath) {
 }
 
 function bindEvents() {
+  recentFoldersContainer = document.getElementById('recentFoldersContainer');
+
   folderBtn.addEventListener('click', selectFolder);
 
   themeToggle.addEventListener('click', async () => {
@@ -527,7 +530,6 @@ function init() {
   outlineList = document.getElementById('outlineList');
   recentFoldersBtn = document.getElementById('recentFoldersBtn');
   recentDropdown = document.getElementById('recentDropdown');
-  recentFoldersContainer = document.getElementById('recentFoldersContainer');
 
   console.log('[OwnMD renderer] DOM elements bound:', {
     content: !!content,
