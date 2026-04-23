@@ -226,17 +226,22 @@ ipcMain.handle('export-pdf', async (event, payload) => {
     webPreferences: { nodeIntegration: false, contextIsolation: true }
   });
 
-  const exportHtml = buildExportHtml(html, theme);
-  await exportWindow.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(exportHtml));
-  await exportWindow.webContents.waitFor('did-finish-load');
+  try {
+    const exportHtml = buildExportHtml(html, theme);
+    await exportWindow.loadURL('data:text/html;charset=utf-8,' + encodeURIComponent(exportHtml));
+    await exportWindow.webContents.waitFor('did-finish-load');
 
-  const pdfBuffer = await exportWindow.webContents.printToPDF({
-    printBackground: true, pageSize: 'A4'
-  });
+    const pdfBuffer = await exportWindow.webContents.printToPDF({
+      printBackground: true, pageSize: 'A4'
+    });
 
-  fs.writeFileSync(savePath.filePath, pdfBuffer);
-  exportWindow.destroy();
-  return { success: true, filePath: savePath.filePath };
+    fs.writeFileSync(savePath.filePath, pdfBuffer);
+    return { success: true, filePath: savePath.filePath };
+  } finally {
+    if (exportWindow && !exportWindow.isDestroyed()) {
+      exportWindow.destroy();
+    }
+  }
 });
 
 ipcMain.handle('export-html', async (event, payload) => {
