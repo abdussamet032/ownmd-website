@@ -12,6 +12,8 @@ if (typeof contextBridge === 'undefined') {
     readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
     getTheme: () => ipcRenderer.invoke('get-theme'),
     setTheme: (theme) => ipcRenderer.invoke('set-theme', theme),
+    getFocusMode: () => ipcRenderer.invoke('get-focus-mode'),
+    setFocusMode: (enabled) => ipcRenderer.invoke('set-focus-mode', enabled),
     searchFiles: (query) => ipcRenderer.invoke('search-files', query),
     getBookmarks: () => ipcRenderer.invoke('get-bookmarks'),
     toggleBookmark: (filePath, fileName) => ipcRenderer.invoke('toggle-bookmark', filePath, fileName),

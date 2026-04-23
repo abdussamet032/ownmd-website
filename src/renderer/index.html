@@ -22,6 +22,13 @@
       </div>
       <button class="bookmark-btn" id="bookmarkBtn" title="Toggle bookmark">☆</button>
       <button class="theme-toggle" id="themeToggle">☀️</button>
+      <button class="toolbar-button" id="focusModeBtn" title="Focus Mode (Cmd+Shift+F)">⊙</button>
+      <button class="toolbar-button" id="typewriterBtn" title="Typewriter Mode">↕</button>
+      <div class="view-modes">
+        <button class="view-btn active" id="previewBtn" data-mode="preview">Preview</button>
+        <button class="view-btn" id="sourceBtn" data-mode="source">Source</button>
+        <button class="view-btn" id="splitBtn" data-mode="split">Split</button>
+      </div>
       <div class="export-menu">
         <button class="toolbar-button" id="exportBtn">Export ▾</button>
         <div class="export-dropdown hidden" id="exportDropdown">
@@ -43,8 +50,11 @@
         </div>
         <div class="file-list" id="fileList"></div>
       </aside>
-      <main class="content" id="content">
-        <div class="welcome-message">Select a folder to get started</div>
+      <main class="workspace" id="workspace">
+        <textarea class="source-editor hidden" id="sourceEditor" spellcheck="false"></textarea>
+        <section class="content" id="content">
+          <div class="welcome-message">Select a folder to get started</div>
+        </section>
       </main>
       <aside class="outline-panel" id="outlinePanel">
         <div class="panel-header">Outline</div>

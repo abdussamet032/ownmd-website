@@ -2,6 +2,14 @@ let currentTheme = 'light';
 let sidebarCollapsed = false;
 let searchDebounceTimer = null;
 
+let state = {
+  focusMode: false,
+  sidebarCollapsed: false,
+  typewriterMode: false,
+  viewMode: 'preview',
+  currentMarkdown: ''
+};
+
 let content = null;
 let fileList = null;
 let currentPath = null;
@@ -161,6 +169,16 @@ async function loadFile(filePath, highlightQuery = null) {
   if (!result.success) {
     showError(result.error);
     return;
+  }
+
+  // Store raw markdown for split view
+  state.currentMarkdown = result.content;
+  state.currentFilePath = filePath;
+
+  // Update source editor
+  const sourceEditor = document.getElementById('sourceEditor');
+  if (sourceEditor) {
+    sourceEditor.value = result.content;
   }
 
   const headings = extractHeadings(result.content);
@@ -546,6 +564,75 @@ async function openRecentFolder(folderPath) {
   }
 }
 
+// Debounce utility
+function debounce(fn, delay) {
+  let timer = null;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+// Focus Mode
+function setFocusMode(enabled) {
+  state.focusMode = enabled;
+  document.body.classList.toggle('focus-mode', enabled);
+  // Hide sidebar and outline
+  sidebar.classList.toggle('hidden', enabled);
+  const outline = document.getElementById('outlinePanel');
+  if (outline) outline.classList.toggle('hidden', enabled);
+  // Center content
+  const content = document.getElementById('content');
+  content.classList.toggle('focused', enabled);
+
+  // Persist to electron-store
+  try {
+    getOwnmdApi().setFocusMode(enabled);
+  } catch (err) {
+    console.error('Failed to persist focus mode:', err);
+  }
+}
+
+// View Mode (Split View)
+function setViewMode(mode) {
+  state.viewMode = mode;
+  const workspace = document.getElementById('workspace');
+  const sourceEditor = document.getElementById('sourceEditor');
+  const content = document.getElementById('content');
+
+  workspace.classList.remove('preview-only', 'source-only', 'split');
+  sourceEditor.classList.remove('hidden');
+  content.classList.remove('hidden');
+
+  if (mode === 'preview') {
+    workspace.classList.add('preview-only');
+    sourceEditor.classList.add('hidden');
+  } else if (mode === 'source') {
+    workspace.classList.add('source-only');
+    content.classList.add('hidden');
+  } else {
+    workspace.classList.add('split');
+  }
+
+  // Update button states
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.mode === mode);
+  });
+}
+
+// Typewriter Mode - center active line
+function centerActiveLine(textarea) {
+  const lineHeight = parseInt(getComputedStyle(textarea).lineHeight) || 24;
+  const cursorPosition = textarea.selectionStart;
+  const textBeforeCursor = textarea.value.substring(0, cursorPosition);
+  const currentLine = textBeforeCursor.split('\n').length - 1;
+  const scrollTop = textarea.scrollTop;
+  const visibleHeight = textarea.clientHeight;
+  const lineTop = currentLine * lineHeight;
+  const targetScroll = lineTop - (visibleHeight / 2) + lineHeight;
+  textarea.scrollTop = Math.max(0, targetScroll);
+}
+
 function bindEvents() {
   recentFoldersContainer = document.getElementById('recentFoldersContainer');
 
@@ -631,6 +718,43 @@ function bindEvents() {
       exportDropdown.classList.add('hidden');
     }
   });
+
+  // Focus mode button
+  document.getElementById('focusModeBtn').addEventListener('click', () => {
+    setFocusMode(!state.focusMode);
+  });
+
+  // Typewriter mode button
+  document.getElementById('typewriterBtn').addEventListener('click', () => {
+    state.typewriterMode = !state.typewriterMode;
+    document.body.classList.toggle('typewriter-mode', state.typewriterMode);
+  });
+
+  // View mode buttons
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setViewMode(btn.dataset.mode);
+    });
+  });
+
+  // Source editor input handler for live preview
+  const sourceEditor = document.getElementById('sourceEditor');
+  sourceEditor.addEventListener('input', debounce(() => {
+    if (state.viewMode === 'split' || state.viewMode === 'preview') {
+      const markdown = sourceEditor.value;
+      state.currentMarkdown = markdown;
+      const html = window.marked.parse(markdown, { gfm: true });
+      content.innerHTML = sanitizeHtml(html);
+    }
+  }, 150));
+
+  // Typewriter mode cursor tracking
+  sourceEditor.addEventListener('input', () => {
+    if (state.typewriterMode) centerActiveLine(sourceEditor);
+  });
+  sourceEditor.addEventListener('selectionchange', () => {
+    if (state.typewriterMode) centerActiveLine(sourceEditor);
+  });
 }
 
 function init() {
@@ -666,6 +790,24 @@ function init() {
   loadBookmarks();
   loadRecentFolders();
   updateExportButtons();
+
+  // Keyboard shortcut for focus mode (Cmd+Shift+F)
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'F' && e.metaKey && e.shiftKey) {
+      e.preventDefault();
+      setFocusMode(!state.focusMode);
+    }
+  });
+
+  // Load persisted focus mode preference
+  try {
+    const result = getOwnmdApi().getFocusMode();
+    if (result && result.focusMode) {
+      setFocusMode(true);
+    }
+  } catch (err) {
+    console.error('Failed to load focus mode preference:', err);
+  }
 }
 
 document.addEventListener('DOMContentLoaded', init);

@@ -9,7 +9,8 @@ const store = new Store({
     lastFolder: null,
     theme: 'light',
     bookmarks: [],
-    recentFolders: []
+    recentFolders: [],
+    focusMode: false
   }
 });
 
@@ -100,6 +101,15 @@ ipcMain.handle('get-theme', () => {
 ipcMain.handle('set-theme', (event, theme) => {
   store.set('theme', theme);
   return { theme };
+});
+
+ipcMain.handle('get-focus-mode', () => {
+  return { focusMode: store.get('focusMode') };
+});
+
+ipcMain.handle('set-focus-mode', (event, enabled) => {
+  store.set('focusMode', enabled);
+  return { focusMode: enabled };
 });
 
 ipcMain.handle('search-files', async (event, query) => {
