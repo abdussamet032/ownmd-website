@@ -92,7 +92,7 @@ const inlineMathExtension = {
   name: 'inlineMath', level: 'inline',
   start(src) { return src.indexOf('$'); },
   tokenizer(src) {
-    const m = src.match(/^\$([^\$]+)\$/);
+    const m = src.match(/^\$(.+?)\$/);
     return m ? { type: 'inlineMath', raw: m[0], math: m[1] } : undefined;
   },
   renderer(token) {
@@ -122,11 +122,18 @@ window.marked.use({ extensions: [blockMathExtension, inlineMathExtension, mermai
 async function renderMermaidDiagrams() {
   const mermaidSources = document.querySelectorAll('.mermaid-source');
   for (const el of mermaidSources) {
-    const id = el.dataset.id;
     const code = el.querySelector('code').textContent;
+    const existingSvg = el.querySelector('svg');
+    // Re-render with new id if theme changed (existing SVG present)
+    // or first render (no existing SVG)
+    const id = existingSvg
+      ? 'mermaid-' + Math.random().toString(36).substr(2, 9)
+      : el.dataset.id;
     try {
       const { svg } = await window.mermaid.render(id, code);
-      el.replaceWith(Object.assign(document.createElement('div'), { innerHTML: svg }).firstChild);
+      const cleanSvg = sanitizeHtml(svg);
+      el.innerHTML = cleanSvg;
+      el.dataset.id = id;
     } catch (e) {
       el.innerHTML = `<div class="mermaid-error">${escapeHtml(e.message)}</div>`;
     }
