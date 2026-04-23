@@ -1,6 +1,8 @@
-let currentTheme = 'light';
+let currentTheme = 'system';
 let sidebarCollapsed = false;
 let searchDebounceTimer = null;
+
+let settings = { fontFamily: 'system', fontSize: 16, lineHeight: 1.6 };
 
 let state = {
   focusMode: false,
@@ -32,6 +34,15 @@ let currentFilePath = null;
 let exportBtn = null;
 let exportDropdown = null;
 let toastTimeout = null;
+let themeSelect = null;
+let settingsBtn = null;
+let settingsPanel = null;
+let fontFamilySelect = null;
+let fontSizeInput = null;
+let fontSizeValue = null;
+let lineHeightInput = null;
+let fullscreenBtn = null;
+let dropOverlay = null;
 
 function getOwnmdApi() {
   if (!window.ownmd) {
@@ -188,22 +199,44 @@ async function initTheme() {
   try {
     const result = await getOwnmdApi().getTheme();
     if (!document.body.hasAttribute('data-theme')) {
-      currentTheme = result.theme || 'light';
+      currentTheme = result.theme || 'system';
     }
   } catch (err) {
     console.error('Failed to load theme:', err);
   }
 
+  // Listen for system theme changes
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+    if (currentTheme === 'system') applyTheme();
+  });
+
   applyTheme();
 }
 
+function resolveTheme(theme) {
+  if (theme === 'system') {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  return theme;
+}
+
 function applyTheme() {
-  document.body.setAttribute('data-theme', currentTheme);
-  themeToggle.textContent = currentTheme === 'light' ? '☀️' : '🌙';
-  themeToggle.setAttribute(
-    'aria-label',
-    currentTheme === 'light' ? 'Switch to dark theme' : 'Switch to light theme'
-  );
+  const resolvedTheme = resolveTheme(currentTheme);
+  document.body.setAttribute('data-theme', resolvedTheme);
+}
+
+function applySettings() {
+  // Apply font family
+  document.body.classList.remove('font-serif', 'font-sans');
+  if (settings.fontFamily === 'serif') {
+    document.body.classList.add('font-serif');
+  } else if (settings.fontFamily === 'sans') {
+    document.body.classList.add('font-sans');
+  }
+
+  // Apply font size and line height via CSS variables
+  document.documentElement.style.setProperty('--reader-font-size', settings.fontSize + 'px');
+  document.documentElement.style.setProperty('--reader-line-height', settings.lineHeight);
 }
 
 async function selectFolder() {
@@ -664,6 +697,29 @@ async function openRecentFolder(folderPath) {
   }
 }
 
+// Keyboard shortcuts
+const SHORTCUTS = {
+  'Cmd+O': () => selectFolder(),
+  'Cmd+F': () => searchInput?.focus(),
+  'Cmd+B': () => toggleSidebar(),
+  'Cmd+Shift+F': () => setFocusMode(!state.focusMode),
+  'Cmd+1': () => setViewMode('preview'),
+  'Cmd+2': () => setViewMode('source'),
+  'Cmd+3': () => setViewMode('split'),
+  'Cmd+E': () => toggleExportMenu(),
+  'Ctrl+Cmd+F': () => getOwnmdApi().toggleFullscreen()
+};
+
+function toggleSidebar() {
+  sidebarCollapsed = !sidebarCollapsed;
+  sidebar.classList.toggle('collapsed', sidebarCollapsed);
+  collapseBtn.textContent = sidebarCollapsed ? '▶' : '◀';
+}
+
+function toggleExportMenu() {
+  exportDropdown.classList.toggle('hidden');
+}
+
 // Debounce utility
 function debounce(fn, delay) {
   let timer = null;
@@ -738,17 +794,15 @@ function bindEvents() {
 
   folderBtn.addEventListener('click', selectFolder);
 
-  themeToggle.addEventListener('click', async () => {
-    currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+  // Theme select
+  themeSelect.addEventListener('change', async () => {
+    currentTheme = themeSelect.value;
     applyTheme();
-
     try {
       await getOwnmdApi().setTheme(currentTheme);
     } catch (err) {
       showError(`Cannot save theme: ${err.message}`);
     }
-
-    // Re-render mermaid diagrams on theme change
     renderMermaidDiagrams();
   });
 
@@ -845,6 +899,82 @@ function bindEvents() {
     });
   });
 
+  // Settings panel toggle
+  settingsBtn.addEventListener('click', () => {
+    settingsPanel.classList.toggle('hidden');
+  });
+
+  // Font family change
+  fontFamilySelect.addEventListener('change', async () => {
+    settings.fontFamily = fontFamilySelect.value;
+    applySettings();
+    try {
+      await getOwnmdApi().setSettings(settings);
+    } catch (err) {
+      console.error('Failed to save settings:', err);
+    }
+  });
+
+  // Font size change
+  fontSizeInput.addEventListener('input', async () => {
+    settings.fontSize = parseInt(fontSizeInput.value);
+    fontSizeValue.textContent = settings.fontSize + 'px';
+    applySettings();
+    try {
+      await getOwnmdApi().setSettings(settings);
+    } catch (err) {
+      console.error('Failed to save settings:', err);
+    }
+  });
+
+  // Line height change
+  lineHeightInput.addEventListener('input', async () => {
+    settings.lineHeight = parseFloat(lineHeightInput.value);
+    applySettings();
+    try {
+      await getOwnmdApi().setSettings(settings);
+    } catch (err) {
+      console.error('Failed to save settings:', err);
+    }
+  });
+
+  // Fullscreen button
+  fullscreenBtn.addEventListener('click', async () => {
+    try {
+      await getOwnmdApi().toggleFullscreen();
+    } catch (err) {
+      console.error('Failed to toggle fullscreen:', err);
+    }
+  });
+
+  // Drag and drop handlers
+  document.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropOverlay.classList.remove('hidden');
+  });
+
+  document.addEventListener('dragleave', (e) => {
+    if (!e.relatedTarget) dropOverlay.classList.add('hidden');
+  });
+
+  document.addEventListener('drop', async (e) => {
+    e.preventDefault();
+    dropOverlay.classList.add('hidden');
+    const result = await getOwnmdApi().openDroppedPath(e.dataTransfer.files[0].path);
+    if (result.success) {
+      currentPath.textContent = result.folderPath;
+      renderFileList(result.files);
+      if (result.fileToOpen) loadFile(result.fileToOpen);
+    }
+  });
+
+  // Close settings panel when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!settingsBtn.contains(e.target) && !settingsPanel.contains(e.target)) {
+      settingsPanel.classList.add('hidden');
+    }
+  });
+
   // Source editor input handler for live preview
   const sourceEditor = document.getElementById('sourceEditor');
   sourceEditor.addEventListener('input', debounce(() => {
@@ -871,7 +1001,7 @@ function init() {
   content = document.getElementById('content');
   fileList = document.getElementById('fileList');
   currentPath = document.getElementById('currentPath');
-  themeToggle = document.getElementById('themeToggle');
+  themeSelect = document.getElementById('themeSelect');
   collapseBtn = document.getElementById('collapseBtn');
   sidebar = document.getElementById('sidebar');
   folderBtn = document.getElementById('folderBtn');
@@ -885,12 +1015,20 @@ function init() {
   recentDropdown = document.getElementById('recentDropdown');
   exportBtn = document.getElementById('exportBtn');
   exportDropdown = document.getElementById('exportDropdown');
+  settingsBtn = document.getElementById('settingsBtn');
+  settingsPanel = document.getElementById('settingsPanel');
+  fontFamilySelect = document.getElementById('fontFamilySelect');
+  fontSizeInput = document.getElementById('fontSizeInput');
+  fontSizeValue = document.getElementById('fontSizeValue');
+  lineHeightInput = document.getElementById('lineHeightInput');
+  fullscreenBtn = document.getElementById('fullscreenBtn');
+  dropOverlay = document.getElementById('dropOverlay');
 
   console.log('[OwnMD renderer] DOM elements bound:', {
     content: !!content,
     fileList: !!fileList,
     folderBtn: !!folderBtn,
-    themeToggle: !!themeToggle
+    themeSelect: !!themeSelect
   });
 
   console.log('[OwnMD renderer] window.ownmd available:', typeof window.ownmd);
@@ -900,14 +1038,6 @@ function init() {
   loadBookmarks();
   loadRecentFolders();
   updateExportButtons();
-
-  // Keyboard shortcut for focus mode (Cmd+Shift+F or Ctrl+Shift+F)
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'F' && (e.metaKey || e.ctrlKey) && e.shiftKey) {
-      e.preventDefault();
-      setFocusMode(!state.focusMode);
-    }
-  });
 
   // Load persisted focus mode preference
   try {
@@ -929,6 +1059,31 @@ function init() {
   } catch (err) {
     console.error('Failed to load typewriter mode preference:', err);
   }
+
+  // Load persisted settings
+  try {
+    const settingsResult = getOwnmdApi().getSettings();
+    if (settingsResult) {
+      settings = { ...settings, ...settingsResult };
+      fontFamilySelect.value = settings.fontFamily;
+      fontSizeInput.value = settings.fontSize;
+      fontSizeValue.textContent = settings.fontSize + 'px';
+      lineHeightInput.value = settings.lineHeight;
+      applySettings();
+    }
+  } catch (err) {
+    console.error('Failed to load settings:', err);
+  }
+
+  // Set initial theme select value
+  themeSelect.value = currentTheme;
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', (e) => {
+    if (e.target.matches('input, textarea, select')) return;
+    const key = ['Cmd', 'Ctrl', 'Shift', e.key].filter(Boolean).join('+');
+    if (SHORTCUTS[key]) { e.preventDefault(); SHORTCUTS[key](); }
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);

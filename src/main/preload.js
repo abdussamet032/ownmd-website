@@ -23,7 +23,11 @@ if (typeof contextBridge === 'undefined') {
     openRecentFolder: (path) => ipcRenderer.invoke('open-recent-folder', path),
     exportPdf: (payload) => ipcRenderer.invoke('export-pdf', payload),
     exportHtml: (payload) => ipcRenderer.invoke('export-html', payload),
-    exportMarkdown: (filePath) => ipcRenderer.invoke('export-markdown', filePath)
+    exportMarkdown: (filePath) => ipcRenderer.invoke('export-markdown', filePath),
+    getSettings: () => ipcRenderer.invoke('get-settings'),
+    setSettings: (s) => ipcRenderer.invoke('set-settings', s),
+    toggleFullscreen: () => ipcRenderer.invoke('toggle-fullscreen'),
+    openDroppedPath: (path) => ipcRenderer.invoke('open-dropped-path', path)
   });
   console.log('[OwnMD preload] window.ownmd API exposed successfully');
 }

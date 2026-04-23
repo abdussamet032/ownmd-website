@@ -7,11 +7,12 @@ const fileService = require('./fileService');
 const store = new Store({
   defaults: {
     lastFolder: null,
-    theme: 'light',
+    theme: 'system',
     bookmarks: [],
     recentFolders: [],
     focusMode: false,
-    typewriterMode: false
+    typewriterMode: false,
+    settings: { fontFamily: 'system', fontSize: 16, lineHeight: 1.6 }
   }
 });
 
@@ -290,6 +291,23 @@ ipcMain.handle('export-markdown', async (event, filePath) => {
   if (savePath.canceled) return { success: false };
   fs.copyFileSync(filePath, savePath.filePath);
   return { success: true };
+});
+
+ipcMain.handle('get-settings', () => store.get('settings'));
+ipcMain.handle('set-settings', (event, s) => { store.set('settings', s); return s; });
+
+ipcMain.handle('toggle-fullscreen', () => {
+  mainWindow.setFullScreen(!mainWindow.isFullScreen());
+  return { fullscreen: mainWindow.isFullScreen() };
+});
+
+ipcMain.handle('open-dropped-path', async (event, filePath) => {
+  const stat = fs.statSync(filePath);
+  const folderPath = stat.isDirectory() ? filePath : path.dirname(filePath);
+  const fileToOpen = stat.isFile() && filePath.endsWith('.md') ? filePath : null;
+  selectedFolder = folderPath;
+  const files = fileService.scanMarkdownFiles(folderPath);
+  return { success: true, folderPath, files, fileToOpen };
 });
 
 app.whenReady().then(() => {
