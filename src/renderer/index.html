@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+  <title>OwnMD</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <header class="toolbar">
+      <span class="toolbar-title">OwnMD</span>
+      <button class="folder-btn" id="folderBtn">📁 Open Folder</button>
+      <div class="recent-folders" id="recentFoldersContainer">
+        <button class="recent-btn" id="recentFoldersBtn">📂 Recent</button>
+        <div class="recent-dropdown hidden" id="recentDropdown"></div>
+      </div>
+      <span class="toolbar-path" id="currentPath">No folder selected</span>
+      <div class="search-box">
+        <input id="searchInput" type="search" placeholder="Search files...">
+      </div>
+      <button class="bookmark-btn" id="bookmarkBtn" title="Toggle bookmark">☆</button>
+      <button class="theme-toggle" id="themeToggle">☀️</button>
+    </header>
+    <div class="main-container">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <span>Files</span>
+          <button class="collapse-btn" id="collapseBtn">◀</button>
+        </div>
+        <div class="favorites-section" id="favoritesSection">
+          <div class="section-header">Favorites</div>
+          <div class="favorites-list" id="favoritesList"></div>
+        </div>
+        <div class="file-list" id="fileList"></div>
+      </aside>
+      <main class="content" id="content">
+        <div class="welcome-message">Select a folder to get started</div>
+      </main>
+      <aside class="outline-panel" id="outlinePanel">
+        <div class="panel-header">Outline</div>
+        <nav class="outline-list" id="outlineList"></nav>
+      </aside>
+    </div>
+    <div class="search-results hidden" id="searchResults"></div>
+  </div>
+  <script src="../../node_modules/marked/marked.min.js"></script>
+  <script src="../../node_modules/dompurify/dist/purify.min.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
