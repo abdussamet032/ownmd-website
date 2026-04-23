@@ -227,9 +227,9 @@ function buildStandaloneHtml(html, title) {
 }
 
 function isPathInsideFolder(filePath, folderPath) {
-  const normalizedFile = path.normalize(filePath);
-  const normalizedFolder = path.normalize(folderPath);
-  return normalizedFile.startsWith(normalizedFolder);
+  const resolvedFile = path.resolve(filePath);
+  const resolvedFolder = path.resolve(folderPath);
+  return resolvedFile.startsWith(resolvedFolder + path.sep);
 }
 
 ipcMain.handle('export-pdf', async (event, payload) => {
@@ -302,9 +302,16 @@ ipcMain.handle('toggle-fullscreen', () => {
 });
 
 ipcMain.handle('open-dropped-path', async (event, filePath) => {
-  const stat = fs.statSync(filePath);
-  const folderPath = stat.isDirectory() ? filePath : path.dirname(filePath);
-  const fileToOpen = stat.isFile() && filePath.endsWith('.md') ? filePath : null;
+  const resolvedPath = path.resolve(filePath);
+
+  // Validate path exists
+  if (!fs.existsSync(resolvedPath)) {
+    return { success: false, error: 'Path does not exist' };
+  }
+
+  const stat = fs.statSync(resolvedPath);
+  const folderPath = stat.isDirectory() ? resolvedPath : path.dirname(resolvedPath);
+  const fileToOpen = stat.isFile() && resolvedPath.endsWith('.md') ? resolvedPath : null;
   selectedFolder = folderPath;
   const files = fileService.scanMarkdownFiles(folderPath);
   return { success: true, folderPath, files, fileToOpen };

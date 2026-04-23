@@ -960,6 +960,11 @@ function bindEvents() {
   document.addEventListener('drop', async (e) => {
     e.preventDefault();
     dropOverlay.classList.add('hidden');
+
+    if (!e.dataTransfer.files[0]) {
+      return;
+    }
+
     const result = await getOwnmdApi().openDroppedPath(e.dataTransfer.files[0].path);
     if (result.success) {
       currentPath.textContent = result.folderPath;
@@ -1034,10 +1039,8 @@ function init() {
   console.log('[OwnMD renderer] window.ownmd available:', typeof window.ownmd);
 
   bindEvents();
-  initTheme();
-  loadBookmarks();
-  loadRecentFolders();
-  updateExportButtons();
+  await Promise.all([initTheme(), loadBookmarks(), loadRecentFolders()]);
+  await updateExportButtons();
 
   // Load persisted focus mode preference
   try {
