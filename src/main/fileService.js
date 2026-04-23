@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const matter = require('gray-matter');
 
 const MAX_DEPTH = 10;
 const MAX_FILES = 10000;
@@ -63,8 +64,14 @@ function readMarkdownFile(filePath, selectedFolder) {
       return { success: false, error: 'File too large (>10MB)' };
     }
 
-    const content = fs.readFileSync(resolvedPath, 'utf-8');
-    return { success: true, content };
+    const rawContent = fs.readFileSync(resolvedPath, 'utf-8');
+    const parsed = matter(rawContent);
+    return {
+      success: true,
+      content: parsed.content,
+      rawContent: rawContent,
+      frontMatter: parsed.data || {}
+    };
   } catch (err) {
     return { success: false, error: `Cannot read file: ${err.message}` };
   }

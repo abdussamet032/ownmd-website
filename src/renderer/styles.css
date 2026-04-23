@@ -611,3 +611,68 @@ body.typewriter-mode .source-editor {
   margin: 0 auto;
   padding: 40px;
 }
+
+/* KaTeX math styling */
+.katex-display {
+  margin: 16px 0;
+  overflow-x: auto;
+}
+
+.math-error {
+  color: #ff3b30;
+  background: #ffe5e5;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+[data-theme="dark"] .math-error {
+  background: #3D2A2A;
+}
+
+/* Mermaid diagram styling */
+.mermaid {
+  overflow-x: auto;
+  text-align: center;
+  padding: 16px;
+}
+
+.mermaid-error {
+  color: #ff3b30;
+  background: #ffe5e5;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+[data-theme="dark"] .mermaid-error {
+  background: #3D2A2A;
+}
+
+/* Front matter styling */
+.front-matter {
+  background: var(--sidebar-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 24px;
+}
+
+.fm-header {
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.fm-list {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+}
+
+.fm-list dt {
+  color: #888;
+}
+
+.fm-list dd {
+  margin: 0;
+}

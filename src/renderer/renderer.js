@@ -7,7 +7,9 @@ let state = {
   sidebarCollapsed: false,
   typewriterMode: false,
   viewMode: 'preview',
-  currentMarkdown: ''
+  currentMarkdown: '',
+  currentFrontMatter: {},
+  currentRawMarkdown: ''
 };
 
 let content = null;
@@ -64,6 +66,89 @@ function sanitizeHtml(value) {
   }
 
   return escapeHtml(value);
+}
+
+// Initialize mermaid
+window.mermaid.initialize({ startOnLoad: false, securityLevel: 'strict' });
+
+// Marked extensions for math and diagrams
+const blockMathExtension = {
+  name: 'blockMath', level: 'block',
+  start(src) { return src.indexOf('$$'); },
+  tokenizer(src) {
+    const m = src.match(/^\$\$(.+?)\$\$$/);
+    return m ? { type: 'blockMath', raw: m[0], math: m[1] } : undefined;
+  },
+  renderer(token) {
+    try {
+      return window.katex.renderToString(token.math, { displayMode: true });
+    } catch (e) {
+      return `<div class="math-error">${escapeHtml(e.message)}</div>`;
+    }
+  }
+};
+
+const inlineMathExtension = {
+  name: 'inlineMath', level: 'inline',
+  start(src) { return src.indexOf('$'); },
+  tokenizer(src) {
+    const m = src.match(/^\$([^\$]+)\$/);
+    return m ? { type: 'inlineMath', raw: m[0], math: m[1] } : undefined;
+  },
+  renderer(token) {
+    try {
+      return window.katex.renderToString(token.math, { displayMode: false });
+    } catch (e) {
+      return `<span class="math-error">${escapeHtml(e.message)}</span>`;
+    }
+  }
+};
+
+const mermaidExtension = {
+  name: 'mermaid', level: 'block',
+  start(src) { return src.indexOf('```mermaid'); },
+  tokenizer(src) {
+    const m = src.match(/^```mermaid\n([\s\S]+?)```/);
+    return m ? { type: 'mermaid', raw: m[0], code: m[1] } : undefined;
+  },
+  renderer(token) {
+    const id = 'mermaid-' + Math.random().toString(36).substr(2, 9);
+    return `<div class="mermaid-source" data-id="${id}"><pre><code>${escapeHtml(token.code)}</code></pre></div>`;
+  }
+};
+
+window.marked.use({ extensions: [blockMathExtension, inlineMathExtension, mermaidExtension] });
+
+async function renderMermaidDiagrams() {
+  const mermaidSources = document.querySelectorAll('.mermaid-source');
+  for (const el of mermaidSources) {
+    const id = el.dataset.id;
+    const code = el.querySelector('code').textContent;
+    try {
+      const { svg } = await window.mermaid.render(id, code);
+      el.replaceWith(Object.assign(document.createElement('div'), { innerHTML: svg }).firstChild);
+    } catch (e) {
+      el.innerHTML = `<div class="mermaid-error">${escapeHtml(e.message)}</div>`;
+    }
+  }
+}
+
+function renderFrontMatter(data) {
+  const panel = document.getElementById('frontMatterPanel');
+  const list = document.getElementById('frontMatterList');
+  const keys = Object.keys(data);
+  if (!keys.length) { panel.classList.add('hidden'); return; }
+  panel.classList.remove('hidden');
+  list.innerHTML = '';
+  keys.forEach(key => {
+    const dt = document.createElement('dt');
+    dt.textContent = key;
+    const dd = document.createElement('dd');
+    const value = data[key];
+    dd.textContent = Array.isArray(value) ? value.join(', ') : typeof value === 'object' ? JSON.stringify(value) : String(value);
+    list.appendChild(dt);
+    list.appendChild(dd);
+  });
 }
 
 function showError(message) {
@@ -173,13 +258,18 @@ async function loadFile(filePath, highlightQuery = null) {
 
   // Store raw markdown for split view
   state.currentMarkdown = result.content;
+  state.currentRawMarkdown = result.rawContent || result.content;
+  state.currentFrontMatter = result.frontMatter || {};
   state.currentFilePath = filePath;
 
   // Update source editor
   const sourceEditor = document.getElementById('sourceEditor');
   if (sourceEditor) {
-    sourceEditor.value = result.content;
+    sourceEditor.value = state.currentRawMarkdown;
   }
+
+  // Render front matter
+  renderFrontMatter(state.currentFrontMatter);
 
   const headings = extractHeadings(result.content);
   const html = window.marked.parse(result.content, { gfm: true, breaks: false });
@@ -202,6 +292,9 @@ async function loadFile(filePath, highlightQuery = null) {
 
   // Build outline
   buildOutline(headings);
+
+  // Render mermaid diagrams
+  renderMermaidDiagrams();
 
   // Highlight search term if provided
   if (highlightQuery) {
@@ -647,6 +740,9 @@ function bindEvents() {
     } catch (err) {
       showError(`Cannot save theme: ${err.message}`);
     }
+
+    // Re-render mermaid diagrams on theme change
+    renderMermaidDiagrams();
   });
 
   collapseBtn.addEventListener('click', () => {
@@ -748,8 +844,10 @@ function bindEvents() {
     if (state.viewMode === 'split' || state.viewMode === 'preview') {
       const markdown = sourceEditor.value;
       state.currentMarkdown = markdown;
+      state.currentRawMarkdown = markdown;
       const html = window.marked.parse(markdown, { gfm: true });
       content.innerHTML = sanitizeHtml(html);
+      renderMermaidDiagrams();
     }
   }, 150));
 

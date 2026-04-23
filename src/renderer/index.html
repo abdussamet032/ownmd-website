@@ -6,6 +6,9 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
   <title>OwnMD</title>
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../../node_modules/katex/dist/katex.min.css">
+  <script src="../../node_modules/katex/dist/katex.min.js"></script>
+  <script src="../../node_modules/mermaid/dist/mermaid.min.js"></script>
 </head>
 <body>
   <div class="app">
@@ -53,6 +56,10 @@
       <main class="workspace" id="workspace">
         <textarea class="source-editor hidden" id="sourceEditor" spellcheck="false"></textarea>
         <section class="content" id="content">
+          <section class="front-matter hidden" id="frontMatterPanel">
+            <div class="fm-header">Document Info</div>
+            <dl class="fm-list" id="frontMatterList"></dl>
+          </section>
           <div class="welcome-message">Select a folder to get started</div>
         </section>
       </main>
