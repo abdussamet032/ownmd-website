@@ -16,7 +16,10 @@ if (typeof contextBridge === 'undefined') {
     getBookmarks: () => ipcRenderer.invoke('get-bookmarks'),
     toggleBookmark: (filePath, fileName) => ipcRenderer.invoke('toggle-bookmark', filePath, fileName),
     getRecentFolders: () => ipcRenderer.invoke('get-recent-folders'),
-    openRecentFolder: (path) => ipcRenderer.invoke('open-recent-folder', path)
+    openRecentFolder: (path) => ipcRenderer.invoke('open-recent-folder', path),
+    exportPdf: (payload) => ipcRenderer.invoke('export-pdf', payload),
+    exportHtml: (payload) => ipcRenderer.invoke('export-html', payload),
+    exportMarkdown: (filePath) => ipcRenderer.invoke('export-markdown', filePath)
   });
   console.log('[OwnMD preload] window.ownmd API exposed successfully');
 }

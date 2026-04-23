@@ -19,6 +19,9 @@ let recentFoldersBtn = null;
 let recentDropdown = null;
 let recentFoldersContainer = null;
 let currentFilePath = null;
+let exportBtn = null;
+let exportDropdown = null;
+let toastTimeout = null;
 
 function getOwnmdApi() {
   if (!window.ownmd) {
@@ -61,6 +64,24 @@ function showError(message) {
   } else {
     console.error(message);
   }
+}
+
+function showToast(message, type = 'success') {
+  // Remove existing toast
+  const existingToast = document.querySelector('.toast');
+  if (existingToast) {
+    existingToast.remove();
+  }
+  clearTimeout(toastTimeout);
+
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  toastTimeout = setTimeout(() => {
+    toast.remove();
+  }, 3000);
 }
 
 async function initTheme() {
@@ -171,6 +192,9 @@ async function loadFile(filePath, highlightQuery = null) {
 
   // Update bookmark state
   await updateBookmarkState();
+
+  // Update export button states
+  updateExportButtons();
 }
 
 function extractHeadings(markdown) {
@@ -411,6 +435,72 @@ async function toggleBookmark() {
   }
 }
 
+function updateExportButtons() {
+  const hasFile = !!currentFilePath;
+  const pdfBtn = document.getElementById('exportPdf');
+  const htmlBtn = document.getElementById('exportHtml');
+  const mdBtn = document.getElementById('exportMd');
+  if (pdfBtn) pdfBtn.disabled = !hasFile;
+  if (htmlBtn) htmlBtn.disabled = !hasFile;
+  if (mdBtn) mdBtn.disabled = !hasFile;
+}
+
+async function exportToPdf() {
+  if (!currentFilePath) return;
+
+  const fileName = currentFilePath.split('/').pop();
+  const html = content.innerHTML;
+
+  try {
+    const result = await getOwnmdApi().exportPdf({
+      html,
+      fileName,
+      theme: currentTheme
+    });
+    if (result.success) {
+      showToast('PDF exported successfully');
+    } else if (result.error !== 'Canceled') {
+      showToast('Failed to export PDF: ' + result.error, 'error');
+    }
+  } catch (err) {
+    showToast('Failed to export PDF', 'error');
+  }
+}
+
+async function exportToHtml() {
+  if (!currentFilePath) return;
+
+  const fileName = currentFilePath.split('/').pop();
+  const html = content.innerHTML;
+
+  try {
+    const result = await getOwnmdApi().exportHtml({
+      html,
+      fileName
+    });
+    if (result.success) {
+      showToast('HTML exported successfully');
+    }
+  } catch (err) {
+    showToast('Failed to export HTML', 'error');
+  }
+}
+
+async function exportToMarkdown() {
+  if (!currentFilePath) return;
+
+  try {
+    const result = await getOwnmdApi().exportMarkdown(currentFilePath);
+    if (result.success) {
+      showToast('Markdown exported successfully');
+    } else if (result.error !== 'Canceled') {
+      showToast('Failed to export Markdown: ' + result.error, 'error');
+    }
+  } catch (err) {
+    showToast('Failed to export Markdown', 'error');
+  }
+}
+
 async function loadRecentFolders() {
   try {
     const folders = await getOwnmdApi().getRecentFolders();
@@ -512,6 +602,35 @@ function bindEvents() {
       recentDropdown.classList.add('hidden');
     }
   });
+
+  // Export dropdown toggle
+  exportBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    exportDropdown.classList.toggle('hidden');
+  });
+
+  // Export options
+  document.getElementById('exportPdf').addEventListener('click', () => {
+    exportDropdown.classList.add('hidden');
+    exportToPdf();
+  });
+
+  document.getElementById('exportHtml').addEventListener('click', () => {
+    exportDropdown.classList.add('hidden');
+    exportToHtml();
+  });
+
+  document.getElementById('exportMd').addEventListener('click', () => {
+    exportDropdown.classList.add('hidden');
+    exportToMarkdown();
+  });
+
+  // Close export dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!exportBtn.contains(e.target) && !exportDropdown.contains(e.target)) {
+      exportDropdown.classList.add('hidden');
+    }
+  });
 }
 
 function init() {
@@ -530,6 +649,8 @@ function init() {
   outlineList = document.getElementById('outlineList');
   recentFoldersBtn = document.getElementById('recentFoldersBtn');
   recentDropdown = document.getElementById('recentDropdown');
+  exportBtn = document.getElementById('exportBtn');
+  exportDropdown = document.getElementById('exportDropdown');
 
   console.log('[OwnMD renderer] DOM elements bound:', {
     content: !!content,
@@ -544,6 +665,7 @@ function init() {
   initTheme();
   loadBookmarks();
   loadRecentFolders();
+  updateExportButtons();
 }
 
 document.addEventListener('DOMContentLoaded', init);
