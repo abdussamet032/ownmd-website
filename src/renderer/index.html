@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';">
+  <title>OwnMD</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="../../node_modules/katex/dist/katex.min.css">
+  <script src="../../node_modules/katex/dist/katex.min.js"></script>
+  <script src="../../node_modules/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <div class="app">
+    <header class="toolbar">
+      <span class="toolbar-title">OwnMD</span>
+      <button class="folder-btn" id="folderBtn">📁 Open Folder</button>
+      <div class="recent-folders" id="recentFoldersContainer">
+        <button class="recent-btn" id="recentFoldersBtn">📂 Recent</button>
+        <div class="recent-dropdown hidden" id="recentDropdown"></div>
+      </div>
+      <span class="toolbar-path" id="currentPath">No folder selected</span>
+      <div class="search-box">
+        <input id="searchInput" type="search" placeholder="Search files...">
+      </div>
+      <button class="bookmark-btn" id="bookmarkBtn" title="Toggle bookmark">☆</button>
+      <select id="themeSelect" aria-label="Theme">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+        <option value="sepia">Sepia</option>
+        <option value="high-contrast">High Contrast</option>
+      </select>
+      <button class="toolbar-button" id="settingsBtn" title="Settings">⚙</button>
+      <button class="toolbar-button" id="fullscreenBtn" title="Fullscreen (Ctrl+Cmd+F)">⛶</button>
+      <button class="toolbar-button" id="focusModeBtn" title="Focus Mode (Cmd+Shift+F)">⊙</button>
+      <button class="toolbar-button" id="typewriterBtn" title="Typewriter Mode">↕</button>
+      <div class="view-modes">
+        <button class="view-btn active" id="previewBtn" data-mode="preview">Preview</button>
+        <button class="view-btn" id="sourceBtn" data-mode="source">Source</button>
+        <button class="view-btn" id="splitBtn" data-mode="split">Split</button>
+      </div>
+      <div class="export-menu">
+        <button class="toolbar-button" id="exportBtn">Export ▾</button>
+        <div class="export-dropdown hidden" id="exportDropdown">
+          <button id="exportPdf">PDF</button>
+          <button id="exportHtml">HTML</button>
+          <button id="exportMd">Markdown</button>
+        </div>
+      </div>
+    </header>
+    <div class="main-container">
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <span>Files</span>
+          <button class="collapse-btn" id="collapseBtn">◀</button>
+        </div>
+        <div class="favorites-section" id="favoritesSection">
+          <div class="section-header">Favorites</div>
+          <div class="favorites-list" id="favoritesList"></div>
+        </div>
+        <div class="file-list" id="fileList"></div>
+      </aside>
+      <main class="workspace" id="workspace">
+        <textarea class="source-editor hidden" id="sourceEditor" spellcheck="false"></textarea>
+        <section class="content" id="content">
+          <section class="front-matter hidden" id="frontMatterPanel">
+            <div class="fm-header">Document Info</div>
+            <dl class="fm-list" id="frontMatterList"></dl>
+          </section>
+          <div class="welcome-message">Select a folder to get started</div>
+        </section>
+      </main>
+      <aside class="outline-panel" id="outlinePanel">
+        <div class="panel-header">Outline</div>
+        <nav class="outline-list" id="outlineList"></nav>
+      </aside>
+    </div>
+    <div class="search-results hidden" id="searchResults"></div>
+  <div class="settings-panel hidden" id="settingsPanel">
+    <div class="setting-group">
+      <label>Font</label>
+      <select id="fontFamilySelect">
+        <option value="system">System</option>
+        <option value="serif">Serif</option>
+        <option value="sans">Sans-serif</option>
+      </select>
+    </div>
+    <div class="setting-group">
+      <label>Size</label>
+      <input type="range" id="fontSizeInput" min="12" max="24" value="16">
+      <span id="fontSizeValue">16px</span>
+    </div>
+    <div class="setting-group">
+      <label>Line Height</label>
+      <input type="range" id="lineHeightInput" min="1.2" max="2" step="0.1" value="1.6">
+    </div>
+  </div>
+  <div class="drop-overlay hidden" id="dropOverlay">
+    <div class="drop-message">Drop file or folder</div>
+  </div>
+  </div>
+  <script src="../../node_modules/marked/marked.min.js"></script>
+  <script src="../../node_modules/dompurify/dist/purify.min.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>

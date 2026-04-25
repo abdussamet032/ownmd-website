@@ -1,0 +1,37 @@
+const { contextBridge, ipcRenderer } = require('electron');
+
+console.log('[OwnMD preload] Script loading...');
+
+if (typeof contextBridge === 'undefined') {
+  console.error('[OwnMD preload] contextBridge is undefined');
+} else if (typeof contextBridge.exposeInMainWorld === 'undefined') {
+  console.error('[OwnMD preload] contextBridge.exposeInMainWorld is undefined');
+} else {
+  contextBridge.exposeInMainWorld('ownmd', {
+    selectFolder: () => ipcRenderer.invoke('select-folder'),
+    readFile: (filePath) => ipcRenderer.invoke('read-file', filePath),
+    getTheme: () => ipcRenderer.invoke('get-theme'),
+    setTheme: (theme) => ipcRenderer.invoke('set-theme', theme),
+    getFocusMode: () => ipcRenderer.invoke('get-focus-mode'),
+    setFocusMode: (enabled) => ipcRenderer.invoke('set-focus-mode', enabled),
+    getTypewriterMode: () => ipcRenderer.invoke('get-typewriter-mode'),
+    setTypewriterMode: (enabled) => ipcRenderer.invoke('set-typewriter-mode', enabled),
+    searchFiles: (query) => ipcRenderer.invoke('search-files', query),
+    getBookmarks: () => ipcRenderer.invoke('get-bookmarks'),
+    toggleBookmark: (filePath, fileName) => ipcRenderer.invoke('toggle-bookmark', filePath, fileName),
+    getRecentFolders: () => ipcRenderer.invoke('get-recent-folders'),
+    openRecentFolder: (path) => ipcRenderer.invoke('open-recent-folder', path),
+    exportPdf: (payload) => ipcRenderer.invoke('export-pdf', payload),
+    exportHtml: (payload) => ipcRenderer.invoke('export-html', payload),
+    exportMarkdown: (filePath) => ipcRenderer.invoke('export-markdown', filePath),
+    getSettings: () => ipcRenderer.invoke('get-settings'),
+    setSettings: (s) => ipcRenderer.invoke('set-settings', s),
+    toggleFullscreen: () => ipcRenderer.invoke('toggle-fullscreen'),
+    openDroppedPath: (path) => ipcRenderer.invoke('open-dropped-path', path)
+  });
+  console.log('[OwnMD preload] window.ownmd API exposed successfully');
+}
+
+window.onerror = function(msg, url, line, col, error) {
+  console.error('[OwnMD renderer error]', msg, 'at', url, ':', line, ':', col);
+};
