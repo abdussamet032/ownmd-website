@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- TODO: Replace with your Google Search Console verification token -->
+  <!-- <meta name="google-site-verification" content="YOUR_TOKEN_HERE" /> -->
+  <title>OwnMD - Free Markdown Editor for macOS</title>
+  <meta name="description" content="Free, open-source Markdown editor for macOS with live preview, KaTeX math, Mermaid diagrams, multiple themes, and fast local file editing.">
+  <meta name="robots" content="index,follow">
+  <meta name="author" content="OwnMD">
+  <meta name="application-name" content="OwnMD">
+  <link rel="canonical" href="https://ownmd.com/?lang=en">
+  <link rel="alternate" hreflang="en" href="https://ownmd.com/?lang=en">
+  <link rel="alternate" hreflang="tr" href="https://ownmd.com/?lang=tr">
+  <link rel="alternate" hreflang="de" href="https://ownmd.com/?lang=de">
+  <link rel="alternate" hreflang="es" href="https://ownmd.com/?lang=es">
+  <link rel="alternate" hreflang="fr" href="https://ownmd.com/?lang=fr">
+  <link rel="alternate" hreflang="ja" href="https://ownmd.com/?lang=ja">
+  <link rel="alternate" hreflang="pt" href="https://ownmd.com/?lang=pt">
+  <link rel="alternate" hreflang="zh" href="https://ownmd.com/?lang=zh">
+  <link rel="alternate" hreflang="x-default" href="https://ownmd.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="OwnMD">
+  <meta property="og:title" content="OwnMD - Free Markdown Editor for macOS">
+  <meta property="og:description" content="Free, open-source Markdown editor for macOS with live preview, KaTeX math, Mermaid diagrams, multiple themes, and fast local file editing.">
+  <meta property="og:url" content="https://ownmd.com/?lang=en">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="https://ownmd.com/screenshots/en-full.png">
+  <meta property="og:image:alt" content="OwnMD Markdown editor interface on macOS">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OwnMD - Free Markdown Editor for macOS">
+  <meta name="twitter:description" content="Free, open-source Markdown editor for macOS with live preview, KaTeX math, Mermaid diagrams, multiple themes, and fast local file editing.">
+  <meta name="twitter:image" content="https://ownmd.com/screenshots/en-full.png">
+  <script id="software-application-schema" type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "OwnMD",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "macOS",
+      "url": "https://ownmd.com/?lang=en",
+      "description": "Free, open-source Markdown editor for macOS with live preview, KaTeX math, Mermaid diagrams, multiple themes, and fast local file editing.",
+      "inLanguage": "en",
+      "image": "https://ownmd.com/screenshots/en-full.png",
+      "screenshot": "https://ownmd.com/screenshots/en-full.png",
+      "softwareVersion": "1.0.0",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }
+  </script>
+  <script id="faq-schema" type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type": "Question", "name": "Is OwnMD free?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. OwnMD is free to download and use."}},
+        {"@type": "Question", "name": "Does OwnMD support KaTeX or math?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. OwnMD renders KaTeX math expressions in your Markdown documents."}},
+        {"@type": "Question", "name": "Can I create diagrams?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Mermaid diagrams are supported for flowcharts, sequence diagrams, and more."}},
+        {"@type": "Question", "name": "Is OwnMD open source?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The project is open source and available on GitHub."}},
+        {"@type": "Question", "name": "Which languages are supported?", "acceptedAnswer": {"@type": "Answer", "text": "OwnMD includes multiple interface languages including English, Turkish, German, Spanish, French, Japanese, Portuguese, and Chinese."}}
+      ]
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="#" class="logo">
+        <span class="logo-text">OwnMD</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features" data-i18n="nav.features">Features</a></li>
+        <li><a href="#editor" data-i18n="nav.editor">Editor</a></li>
+        <li><a href="#themes" data-i18n="nav.themes">Themes</a></li>
+        <li><a href="#download" data-i18n="nav.download">Download</a></li>
+      </ul>
+      <a href="https://github.com/abdussametalisar/ownmd" target="_blank" class="nav-cta" rel="noopener">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+        GitHub
+      </a>
+      <div class="lang-switcher">
+        <button class="lang-btn" aria-label="Change language">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>
+          <span class="lang-btn-label">EN</span>
+        </button>
+        <div class="lang-dropdown">
+          <button data-lang="en">English</button>
+          <button data-lang="tr">Türkçe</button>
+          <button data-lang="de">Deutsch</button>
+          <button data-lang="es">Español</button>
+          <button data-lang="fr">Français</button>
+          <button data-lang="ja">日本語</button>
+          <button data-lang="pt">Português</button>
+          <button data-lang="zh">简体中文</button>
+        </div>
+      </div>
+      <button class="mobile-toggle" id="mobileToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <header class="hero" id="hero">
+    <div class="container hero-container">
+      <div class="hero-text">
+        <div class="hero-badge" data-i18n="hero.badge">macOS Markdown Editor</div>
+        <h1><span data-i18n="hero.title.1">Own Your</span><br><span class="gradient-text" data-i18n="hero.title.2">Markdown.</span></h1>
+        <p class="hero-desc" data-i18n="hero.desc">Minimal, powerful, and fully under your control. KaTeX math, Mermaid diagrams, 5 themes and much more — all in a single app.</p>
+        <div class="hero-actions">
+          <a href="#download" class="btn btn-primary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            <span data-i18n="hero.btn.download">Download Free</span>
+          </a>
+          <a href="#features" class="btn btn-secondary"><span data-i18n="hero.btn.explore">Explore Features</span></a>
+        </div>
+        <div class="hero-meta">
+          <span data-i18n="hero.meta.macos">macOS</span>
+          <span class="dot"></span>
+          <span data-i18n="hero.meta.electron">Electron</span>
+          <span class="dot"></span>
+          <span data-i18n="hero.meta.opensource">Open Source</span>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <!-- Realistic OwnMD App Window -->
+        <div class="app-window">
+          <!-- macOS Title Bar -->
+          <div class="macos-bar">
+            <div class="macos-dots">
+              <span class="dot-red"></span>
+              <span class="dot-yellow"></span>
+              <span class="dot-green"></span>
+            </div>
+          </div>
+          <!-- App Toolbar -->
+          <div class="app-toolbar">
+            <div class="tb-group tb-nav">
+              <span class="tb-collapse">◀</span>
+              <span class="tb-title">OwnMD</span>
+            </div>
+            <div class="tb-sep"></div>
+            <div class="tb-group tb-files">
+              <span class="tb-folder-btn" data-i18n="toolbar.openFolder">Open Folder</span>
+              <span class="tb-recent" data-i18n="toolbar.recent">Recent</span>
+              <span class="tb-path">~/projects/docs</span>
+            </div>
+            <div class="tb-sep"></div>
+            <div class="tb-group tb-view">
+              <span class="tb-view-btn active" data-i18n="toolbar.preview">Preview</span>
+              <span class="tb-view-btn" data-i18n="toolbar.source">Source</span>
+              <span class="tb-view-btn" data-i18n="toolbar.split">Split</span>
+              <span class="tb-icon">◎</span>
+              <span class="tb-icon">⇕</span>
+            </div>
+            <div class="tb-sep"></div>
+            <div class="tb-group tb-actions">
+              <span class="tb-search-box" data-i18n="toolbar.search">Search files...</span>
+              <span class="tb-select" data-i18n="toolbar.system">System ▾</span>
+              <span class="tb-icon" data-i18n="toolbar.export">Export ▾</span>
+              <span class="tb-icon">⚙</span>
+            </div>
+          </div>
+          <!-- Main Content Area -->
+          <div class="app-main">
+            <!-- Sidebar -->
+            <div class="app-sidebar">
+              <div class="app-sidebar-header" data-i18n="sidebar.files">FILES</div>
+              <div class="app-file-list">
+                <div class="app-folder-item">📁 documentation</div>
+                <div class="app-file-item">introduction.md</div>
+                <div class="app-file-item active">getting-started.md</div>
+                <div class="app-file-item">configuration.md</div>
+                <div class="app-folder-item">📁 guides</div>
+                <div class="app-file-item">markdown-guide.md</div>
+                <div class="app-file-item">math-support.md</div>
+                <div class="app-file-item">diagrams.md</div>
+                <div class="app-folder-item">📁 notes</div>
+                <div class="app-file-item">changelog.md</div>
+                <div class="app-file-item">todo.md</div>
+              </div>
+            </div>
+            <!-- Content -->
+            <div class="app-content">
+              <h1 class="app-h1" data-i18n="heroApp.h1">Getting Started</h1>
+              <p class="app-p" data-i18n-html="heroApp.p">OwnMD is a <strong>lightweight and fast</strong> markdown editor built for macOS.</p>
+              <h2 class="app-h2" data-i18n="heroApp.h2.setup">Installation</h2>
+              <p class="app-p" data-i18n="heroApp.p.setup">Open your folder and start editing right away.</p>
+              <div class="app-code-block"><span class="app-code-kw">npm</span> install ownmd</div>
+              <h2 class="app-h2" data-i18n="heroApp.h2.features">Features</h2>
+              <ul class="app-ul">
+                <li data-i18n="heroApp.li.katex">KaTeX math expressions</li>
+                <li data-i18n="heroApp.li.mermaid">Mermaid diagrams</li>
+                <li data-i18n="heroApp.li.themes">5 different themes</li>
+                <li data-i18n="heroApp.li.export">PDF and HTML export</li>
+              </ul>
+            </div>
+            <!-- Outline Panel -->
+            <div class="app-outline">
+              <div class="app-outline-header" data-i18n="outline.header">OUTLINE</div>
+              <div class="app-outline-list">
+                <div class="app-outline-item level-1 active" data-i18n="heroApp.outline.h1">Getting Started</div>
+                <div class="app-outline-item level-2" data-i18n="heroApp.outline.setup">Installation</div>
+                <div class="app-outline-item level-2" data-i18n="heroApp.outline.features">Features</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Features -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge" data-i18n="features.badge">Features</span>
+        <h2 data-i18n-html="features.title">Everything you need,<br>nothing you don't.</h2>
+        <p data-i18n="features.desc">OwnMD provides everything you need to read and edit your markdown files — without the complexity.</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </div>
+          <h3 data-i18n="features.viewModes.title">Three View Modes</h3>
+          <p data-i18n="features.viewModes.desc">Preview, source editor, or side-by-side split view — choose what suits your needs.</p>
+        </div>
+
+        <div class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </div>
+          <h3 data-i18n="features.themes.title">5 Themes</h3>
+          <p data-i18n="features.themes.desc">Customize your workspace with System, Light, Dark, Sepia, and High Contrast themes.</p>
+        </div>
+
+        <div class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+          </div>
+          <h3 data-i18n="features.katex.title">KaTeX Math</h3>
+          <p data-i18n="features.katex.desc">Render LaTeX math expressions in real-time with $inline$ and $$block$$ syntax.</p>
+        </div>
+
+        <div class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
+          </div>
+          <h3 data-i18n="features.mermaid.title">Mermaid Diagrams</h3>
+          <p data-i18n="features.mermaid.desc">Flowcharts, sequence diagrams and more — auto-generated with Mermaid syntax.</p>
+        </div>
+
+        <div class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </div>
+          <h3 data-i18n="features.search.title">Global Search</h3>
+          <p data-i18n="features.search.desc">Instantly search across all files. Find what you need with line-by-line results.</p>
+        </div>
+
+        <div class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <h3 data-i18n="features.export.title">Export Options</h3>
+          <p data-i18n="features.export.desc">Export as PDF, HTML, or raw Markdown. Share your documents in any format you want.</p>
+        </div>
+
+        <div class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>
+          </div>
+          <h3 data-i18n="features.bookmarks.title">Bookmarks</h3>
+          <p data-i18n="features.bookmarks.desc">Bookmark your frequently used files and access them instantly.</p>
+        </div>
+
+        <div class="feature-card" data-animate>
+          <div class="feature-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
+          </div>
+          <h3 data-i18n="features.focus.title">Focus Mode</h3>
+          <p data-i18n="features.focus.desc">Hide all UI elements for a distraction-free reading and writing experience.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Editor Showcase -->
+  <section class="editor-showcase" id="editor">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge" data-i18n="editor.badge">Editor</span>
+        <h2 data-i18n-html="editor.title">Preview while you write.<br>Edit while you preview.</h2>
+        <p data-i18n="editor.desc">Experience the workflow that fits your style with three different view modes.</p>
+      </div>
+
+      <div class="editor-modes">
+        <div class="mode-tabs">
+          <button class="mode-tab active" data-mode="preview" data-i18n="toolbar.preview">Preview</button>
+          <button class="mode-tab" data-mode="source" data-i18n="toolbar.source">Source</button>
+          <button class="mode-tab" data-mode="split" data-i18n="toolbar.split">Split</button>
+        </div>
+
+        <div class="mode-display">
+          <!-- Preview Mode -->
+          <div class="mode-content active" id="mode-preview">
+            <div class="editor-window">
+              <div class="app-toolbar ew-toolbar">
+                <div class="tb-group tb-nav">
+                  <span class="tb-collapse">◀</span>
+                  <span class="tb-title">OwnMD</span>
+                </div>
+                <div class="tb-sep"></div>
+                <div class="tb-group tb-view">
+                  <span class="tb-view-btn active" data-i18n="toolbar.preview">Preview</span>
+                  <span class="tb-view-btn" data-i18n="toolbar.source">Source</span>
+                  <span class="tb-view-btn" data-i18n="toolbar.split">Split</span>
+                </div>
+                <div class="tb-sep"></div>
+                <div class="tb-group tb-actions" style="margin-left:auto;">
+                  <span class="tb-select" data-i18n="toolbar.light">Light ▾</span>
+                  <span class="tb-icon" data-i18n="toolbar.export">Export ▾</span>
+                  <span class="tb-icon">⚙</span>
+                </div>
+              </div>
+              <div class="ew-body">
+                <div class="ew-sidebar">
+                  <div class="app-sidebar-header" data-i18n="sidebar.files">FILES</div>
+                  <div class="app-file-item active">README.md</div>
+                  <div class="app-file-item">CHANGELOG.md</div>
+                  <div class="app-file-item">guide.md</div>
+                  <div class="app-file-item">notes.md</div>
+                </div>
+                <div class="ew-content">
+                  <h1 class="app-h1" data-i18n="editorPreview.h1">OwnMD User Guide</h1>
+                  <p class="app-p" data-i18n="editorPreview.p">Easily manage your markdown files</p>
+                  <h2 class="app-h2" data-i18n="editorPreview.h2.start">Getting Started</h2>
+                  <p class="app-p" data-i18n-html="editorPreview.p.start">OwnMD is a lightweight and fast markdown editor built for macOS. Open your folder and <strong>start editing your files</strong> right away.</p>
+                  <div class="app-code-block"><span class="app-code-kw">npm</span> install ownmd</div>
+                  <h2 class="app-h2" data-i18n="editorPreview.h2.themes">Themes</h2>
+                  <p class="app-p" data-i18n="editorPreview.p.themes">Customize your workspace with 5 different themes: Light, Dark, Sepia, High Contrast, and System.</p>
+                  <div class="app-blockquote" data-i18n="editorPreview.quote">"Simplicity is the ultimate sophistication." — Leonardo da Vinci</div>
+                </div>
+                <div class="ew-outline">
+                  <div class="app-outline-header" data-i18n="outline.header">OUTLINE</div>
+                  <div class="app-outline-item level-1 active" data-i18n="editorPreview.outline.h1">User Guide</div>
+                  <div class="app-outline-item level-2" data-i18n="editorPreview.outline.start">Getting Started</div>
+                  <div class="app-outline-item level-2" data-i18n="editorPreview.outline.themes">Themes</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Source Mode -->
+          <div class="mode-content" id="mode-source">
+            <div class="editor-window">
+              <div class="app-toolbar ew-toolbar">
+                <div class="tb-group tb-nav">
+                  <span class="tb-collapse">◀</span>
+                  <span class="tb-title">OwnMD</span>
+                </div>
+                <div class="tb-sep"></div>
+                <div class="tb-group tb-view">
+                  <span class="tb-view-btn" data-i18n="toolbar.preview">Preview</span>
+                  <span class="tb-view-btn active" data-i18n="toolbar.source">Source</span>
+                  <span class="tb-view-btn" data-i18n="toolbar.split">Split</span>
+                </div>
+                <div class="tb-sep"></div>
+                <div class="tb-group tb-actions" style="margin-left:auto;">
+                  <span class="tb-select" data-i18n="toolbar.light">Light ▾</span>
+                  <span class="tb-icon">⚙</span>
+                </div>
+              </div>
+              <div class="ew-body">
+                <div class="ew-sidebar">
+                  <div class="app-sidebar-header" data-i18n="sidebar.files">FILES</div>
+                  <div class="app-file-item active">README.md</div>
+                  <div class="app-file-item">CHANGELOG.md</div>
+                  <div class="app-file-item">guide.md</div>
+                  <div class="app-file-item">notes.md</div>
+                </div>
+                <div class="ew-source-area">
+                  <pre class="source-code"><span class="code-h" data-i18n="editorSource.h1"># OwnMD User Guide</span>
+
+<span data-i18n="editorSource.p">Easily manage your markdown files</span>
+
+<span class="code-h" data-i18n="editorSource.h2.start">## Getting Started</span>
+
+<span data-i18n="editorSource.p.start">OwnMD is a lightweight and fast
+markdown editor built for macOS.
+Open your folder and
+**start editing your files** right away.</span>
+
+<span class="code-code">```bash
+npm install ownmd
+```</span>
+
+<span class="code-h" data-i18n="editorSource.h2.themes">## Themes</span>
+
+<span data-i18n="editorSource.p.themes">Customize your workspace with 5 different themes:
+Light, Dark, Sepia, High Contrast, and System.</span>
+
+<span class="code-code" data-i18n="editorSource.quote">> "Simplicity is the ultimate sophistication."
+> — Leonardo da Vinci</span></pre>
+                </div>
+                <div class="ew-outline">
+                  <div class="app-outline-header" data-i18n="outline.header">OUTLINE</div>
+                  <div class="app-outline-item level-1 active" data-i18n="editorSource.outline.h1">User Guide</div>
+                  <div class="app-outline-item level-2" data-i18n="editorSource.outline.start">Getting Started</div>
+                  <div class="app-outline-item level-2" data-i18n="editorSource.outline.themes">Themes</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Split Mode -->
+          <div class="mode-content" id="mode-split">
+            <div class="editor-window">
+              <div class="app-toolbar ew-toolbar">
+                <div class="tb-group tb-nav">
+                  <span class="tb-collapse">◀</span>
+                  <span class="tb-title">OwnMD</span>
+                </div>
+                <div class="tb-sep"></div>
+                <div class="tb-group tb-view">
+                  <span class="tb-view-btn" data-i18n="toolbar.preview">Preview</span>
+                  <span class="tb-view-btn" data-i18n="toolbar.source">Source</span>
+                  <span class="tb-view-btn active" data-i18n="toolbar.split">Split</span>
+                </div>
+                <div class="tb-sep"></div>
+                <div class="tb-group tb-actions" style="margin-left:auto;">
+                  <span class="tb-select" data-i18n="toolbar.light">Light ▾</span>
+                  <span class="tb-icon">⚙</span>
+                </div>
+              </div>
+              <div class="ew-body">
+                <div class="ew-sidebar">
+                  <div class="app-sidebar-header" data-i18n="sidebar.files">FILES</div>
+                  <div class="app-file-item active">README.md</div>
+                  <div class="app-file-item">guide.md</div>
+                  <div class="app-file-item">notes.md</div>
+                </div>
+                <div class="ew-split-content">
+                  <!-- Source half -->
+                  <div class="ew-split-source">
+                    <pre class="source-code" style="font-size:0.7rem;"><span class="code-h" data-i18n="editorSplit.h1"># OwnMD Guide</span>
+
+<span data-i18n="editorSplit.p">Manage your Markdown</span>
+
+<span class="code-h" data-i18n="editorSplit.h2.setup">## Installation</span>
+
+<span data-i18n-html="editorSplit.p.setup"><strong>Quick and easy</strong> setup:</span>
+
+<span class="code-code">```bash
+npm start
+```</span>
+
+<span class="code-h" data-i18n="editorSplit.h2.features">## Features</span>
+
+- <span data-i18n-html="editorSplit.li.themes"><strong>5 Themes</strong></span>
+- <span data-i18n="editorSplit.li.katex">KaTeX Support</span>
+- <span data-i18n="editorSplit.li.mermaid">Mermaid Diagrams</span>
+- <span data-i18n="editorSplit.li.export">PDF Export</span></pre>
+                  </div>
+                  <div class="ew-split-divider"></div>
+                  <!-- Preview half -->
+                  <div class="ew-split-preview">
+                    <h1 class="app-h1" style="font-size:1.1rem;" data-i18n="editorSplit.h1">OwnMD Guide</h1>
+                    <p class="app-p" style="font-size:0.75rem;" data-i18n="editorSplit.p">Manage your Markdown</p>
+                    <h2 class="app-h2" style="font-size:0.9rem;" data-i18n="editorSplit.h2.setup">Installation</h2>
+                    <p class="app-p" style="font-size:0.75rem;" data-i18n-html="editorSplit.p.setup"><strong>Quick and easy</strong> setup:</p>
+                    <div class="app-code-block" style="font-size:0.65rem;margin:8px 0;">npm start</div>
+                    <h2 class="app-h2" style="font-size:0.9rem;" data-i18n="editorSplit.h2.features">Features</h2>
+                    <ul class="app-ul" style="font-size:0.75rem;">
+                      <li data-i18n-html="editorSplit.li.themes"><strong>5 Themes</strong></li>
+                      <li data-i18n="editorSplit.li.katex">KaTeX Support</li>
+                      <li data-i18n="editorSplit.li.mermaid">Mermaid Diagrams</li>
+                      <li data-i18n="editorSplit.li.export">PDF Export</li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="ew-outline">
+                  <div class="app-outline-header" data-i18n="outline.header">OUTLINE</div>
+                  <div class="app-outline-item level-1 active" data-i18n="editorSplit.outline.h1">Guide</div>
+                  <div class="app-outline-item level-2" data-i18n="editorSplit.outline.setup">Installation</div>
+                  <div class="app-outline-item level-2" data-i18n="editorSplit.outline.features">Features</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Themes -->
+  <section class="themes-section" id="themes">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge" data-i18n="themes.badge">Themes</span>
+        <h2 data-i18n-html="themes.title">Easy on the eyes,<br>easy on the soul.</h2>
+        <p data-i18n="themes.desc">Personalize your workspace with five different themes.</p>
+      </div>
+
+      <div class="themes-showcase">
+        <div class="theme-card" data-animate>
+          <div class="theme-preview light-theme">
+            <div class="tp-toolbar"></div>
+            <div class="tp-body">
+              <div class="tp-sidebar"></div>
+              <div class="tp-main">
+                <div class="tp-heading"></div>
+                <div class="tp-line"></div>
+                <div class="tp-line short"></div>
+                <div class="tp-code"></div>
+              </div>
+            </div>
+          </div>
+          <span class="theme-label" data-i18n="themes.light">Light</span>
+        </div>
+        <div class="theme-card" data-animate>
+          <div class="theme-preview dark-theme">
+            <div class="tp-toolbar"></div>
+            <div class="tp-body">
+              <div class="tp-sidebar"></div>
+              <div class="tp-main">
+                <div class="tp-heading"></div>
+                <div class="tp-line"></div>
+                <div class="tp-line short"></div>
+                <div class="tp-code"></div>
+              </div>
+            </div>
+          </div>
+          <span class="theme-label" data-i18n="themes.dark">Dark</span>
+        </div>
+        <div class="theme-card" data-animate>
+          <div class="theme-preview sepia-theme">
+            <div class="tp-toolbar"></div>
+            <div class="tp-body">
+              <div class="tp-sidebar"></div>
+              <div class="tp-main">
+                <div class="tp-heading"></div>
+                <div class="tp-line"></div>
+                <div class="tp-line short"></div>
+                <div class="tp-code"></div>
+              </div>
+            </div>
+          </div>
+          <span class="theme-label" data-i18n="themes.sepia">Sepia</span>
+        </div>
+        <div class="theme-card" data-animate>
+          <div class="theme-preview contrast-theme">
+            <div class="tp-toolbar"></div>
+            <div class="tp-body">
+              <div class="tp-sidebar"></div>
+              <div class="tp-main">
+                <div class="tp-heading"></div>
+                <div class="tp-line"></div>
+                <div class="tp-line short"></div>
+                <div class="tp-code"></div>
+              </div>
+            </div>
+          </div>
+          <span class="theme-label" data-i18n="themes.contrast">High Contrast</span>
+        </div>
+        <div class="theme-card" data-animate>
+          <div class="theme-preview system-theme">
+            <div class="tp-toolbar"></div>
+            <div class="tp-body">
+              <div class="tp-sidebar"></div>
+              <div class="tp-main">
+                <div class="tp-heading"></div>
+                <div class="tp-line"></div>
+                <div class="tp-line short"></div>
+                <div class="tp-code"></div>
+              </div>
+            </div>
+          </div>
+          <span class="theme-label" data-i18n="themes.system">System</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq-section" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge" data-i18n="faq.badge">FAQ</span>
+        <h2 data-i18n="faq.title">Frequently asked questions</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item" data-animate>
+          <h3 data-i18n="faq.q1.question">Is OwnMD free?</h3>
+          <p data-i18n="faq.q1.answer">Yes. OwnMD is free to download and use.</p>
+        </div>
+        <div class="faq-item" data-animate>
+          <h3 data-i18n="faq.q2.question">Does OwnMD support KaTeX or math?</h3>
+          <p data-i18n="faq.q2.answer">Yes. OwnMD renders KaTeX math expressions in your Markdown documents.</p>
+        </div>
+        <div class="faq-item" data-animate>
+          <h3 data-i18n="faq.q3.question">Can I create diagrams?</h3>
+          <p data-i18n="faq.q3.answer">Yes. Mermaid diagrams are supported for flowcharts, sequence diagrams, and more.</p>
+        </div>
+        <div class="faq-item" data-animate>
+          <h3 data-i18n="faq.q4.question">Is OwnMD open source?</h3>
+          <p data-i18n="faq.q4.answer">Yes. The project is open source and available on GitHub.</p>
+        </div>
+        <div class="faq-item" data-animate>
+          <h3 data-i18n="faq.q5.question">Which languages are supported?</h3>
+          <p data-i18n="faq.q5.answer">OwnMD includes multiple interface languages including English, Turkish, German, Spanish, French, Japanese, Portuguese, and Chinese.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Keyboard Shortcuts -->
+  <section class="shortcuts-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-badge" data-i18n="shortcuts.badge">Keyboard Shortcuts</span>
+        <h2 data-i18n-html="shortcuts.title">Hands on the keyboard,<br>everything one click away.</h2>
+      </div>
+
+      <div class="shortcuts-grid">
+        <div class="shortcut-item" data-animate>
+          <div class="shortcut-keys"><kbd>⌘</kbd><kbd>O</kbd></div>
+          <span class="shortcut-desc" data-i18n="shortcuts.openFolder">Open Folder</span>
+        </div>
+        <div class="shortcut-item" data-animate>
+          <div class="shortcut-keys"><kbd>⌘</kbd><kbd>F</kbd></div>
+          <span class="shortcut-desc" data-i18n="shortcuts.search">Search</span>
+        </div>
+        <div class="shortcut-item" data-animate>
+          <div class="shortcut-keys"><kbd>⌘</kbd><kbd>B</kbd></div>
+          <span class="shortcut-desc" data-i18n="shortcuts.sidebar">Sidebar</span>
+        </div>
+        <div class="shortcut-item" data-animate>
+          <div class="shortcut-keys"><kbd>⌘</kbd><kbd>⇧</kbd><kbd>F</kbd></div>
+          <span class="shortcut-desc" data-i18n="shortcuts.focus">Focus Mode</span>
+        </div>
+        <div class="shortcut-item" data-animate>
+          <div class="shortcut-keys"><kbd>⌘</kbd><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd></div>
+          <span class="shortcut-desc" data-i18n="shortcuts.viewModes">View Modes</span>
+        </div>
+        <div class="shortcut-item" data-animate>
+          <div class="shortcut-keys"><kbd>⌘</kbd><kbd>E</kbd></div>
+          <span class="shortcut-desc" data-i18n="shortcuts.export">Export</span>
+        </div>
+        <div class="shortcut-item" data-animate>
+          <div class="shortcut-keys"><kbd>⌃</kbd><kbd>⌘</kbd><kbd>F</kbd></div>
+          <span class="shortcut-desc" data-i18n="shortcuts.fullscreen">Fullscreen</span>
+        </div>
+        <div class="shortcut-item" data-animate>
+          <div class="shortcut-keys"><kbd>⌘</kbd><kbd>S</kbd></div>
+          <span class="shortcut-desc" data-i18n="shortcuts.save">Save</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA / Download -->
+  <section class="cta-section" id="download">
+    <div class="container">
+      <div class="cta-box">
+        <div class="cta-glow"></div>
+        <h2 data-i18n-html="cta.title">Redefine your<br><span class="gradient-text">markdown experience.</span></h2>
+        <p data-i18n="cta.desc">Download OwnMD today and discover a new way to work with your markdown files. Completely free and open source.</p>
+        <div class="cta-actions">
+          <a href="#" class="btn btn-primary btn-large">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+            <span data-i18n="cta.download">Download for macOS</span>
+          </a>
+          <a href="https://github.com/abdussametalisar/ownmd" target="_blank" class="btn btn-outline btn-large" rel="noopener"><span data-i18n="cta.github">View on GitHub</span></a>
+        </div>
+        <div class="cta-info">
+          <span data-i18n="cta.macos">macOS 10.15+</span>
+          <span class="dot"></span>
+          <span data-i18n="cta.version">v1.0.0</span>
+          <span class="dot"></span>
+          <span data-i18n="cta.size">~80MB</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-top">
+        <div class="footer-brand">
+          <a href="#" class="logo">
+            <span class="logo-text">OwnMD</span>
+          </a>
+          <p data-i18n-html="footer.desc">Minimal, powerful markdown editor.<br>Open source for macOS.</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <h4 data-i18n="footer.product">Product</h4>
+            <a href="#features" data-i18n="footer.product.features">Features</a>
+            <a href="#editor" data-i18n="footer.product.editor">Editor</a>
+            <a href="#themes" data-i18n="footer.product.themes">Themes</a>
+            <a href="#download" data-i18n="footer.product.download">Download</a>
+          </div>
+          <div class="footer-col">
+            <h4 data-i18n="footer.developer">Developer</h4>
+            <a href="https://github.com/abdussametalisar/ownmd" target="_blank" rel="noopener">GitHub</a>
+            <a href="https://github.com/abdussametalisar/ownmd/issues" target="_blank" rel="noopener" data-i18n="footer.developer.bugReport">Report a Bug</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span data-i18n="footer.copyright">&copy; 2025 OwnMD. Open source software.</span>
+        <span data-i18n="footer.madeWith">Made with love</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="i18n.js"></script>
+  <script src="script.js"></script>
+  <!-- TODO: Replace G-XXXXXXXXXX with your Google Analytics 4 Measurement ID -->
+  <!--
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-XXXXXXXXXX');
+  </script>
+  -->
+</body>
+</html>
